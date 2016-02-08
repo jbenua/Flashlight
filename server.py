@@ -28,7 +28,6 @@ class FlashlightServer(TCPServer):
                 b"\x20", 3, color[0], color[1], color[2])
         else:
             text = data
-        print("Sending to client:", text)
         if text[-1] != '\n':
             text += b'\n'
         return text
@@ -42,11 +41,11 @@ class FlashlightServer(TCPServer):
             "'on'\n'off'\n'color 200 150 3'\n or byte sequence...")
         while True:
             try:
-                data = input('(command) ')
-                data = self.decode_data(data)
+                data = self.decode_data(input('(command) '))
                 yield stream.write(data)
+                print("Sending to client: ", data[:-1])
             except StreamClosedError:
-                print("Client " + str(address) + " left.")
+                print("Client " + str(address) + " left, cannot send message.")
                 FlashlightServer.clients.remove(address)
                 break
 
