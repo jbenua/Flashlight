@@ -1,45 +1,36 @@
 from tornado.ioloop import IOLoop
 from tornado.options import define, options
-from tornado import gen
-from tornado.tcpclient import TCPClient
+from tornado import web
 from struct import *
-from controller import FlashlightController
-from views.console_view import ConsoleView
-from tornado.iostream import StreamClosedError
+from ws import EchoWebSocket
+import os
+from command_worker import CommandQueue
+
 
 define('port', default=9999, help="TCP port to use")
+define('console', default=True, help="Use console view")
+
+settings = dict(
+    template_path=os.path.join(os.path.dirname(__file__), "templates"),
+    static_path=os.path.join(os.path.dirname(__file__), "static"),
+    debug=True,)
 
 
-class FlashlightClient():
-
-    def __init__(self):
-        self.controller = FlashlightController(ConsoleView())
-
-    @gen.coroutine
-    def run_client(self):
-        """Setup the connection to the flashlight server and wait for user
-        input.
-        """
-        stream = yield TCPClient().connect('127.0.0.1', options.port)
-        try:
-            while True:
-                if not (yield self.flashlight(stream)):
-                    break
-        except KeyboardInterrupt:
-            stream.close()
-
-    @gen.coroutine
-    def flashlight(self, stream):
-        try:
-            data = yield stream.read_until('\n'.encode())
-        except StreamClosedError:
-            print("Server closed connection")
-            raise gen.Return(False)
-        self.controller.execute_tlv(data)
-        raise gen.Return(True)
+class MainHandler(web.RequestHandler):
+    def get(self):
+        self.render('flashlight.html')
 
 if __name__ == "__main__":
     options.parse_command_line()
+    print(options.console)
     print("Starting client...")
-    client = FlashlightClient()
-    IOLoop.instance().run_sync(client.run_client)
+    app = web.Application(
+        [(r'/', MainHandler),
+        (r'/ws', EchoWebSocket)],
+        **settings)
+    app.listen(8888)
+    app.settings['port'] = options.port
+    app.settings['commands_queue'] = CommandQueue()
+    IOLoop.current().spawn_callback(
+        app.settings['commands_queue'].process_command)
+    IOLoop.current().start()

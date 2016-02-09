@@ -6,8 +6,6 @@ class FlashlightController(AbstractFlashlightController):
 
     def __init__(self, view=None):
         self.view = view
-        if self.view:
-            self.view.draw()
 
     def execute_tlv(self, tlv):
         commands = self._decompose_tlv(tlv)
