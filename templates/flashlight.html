@@ -27,23 +27,26 @@ img {
     };
     ws.onmessage = function (evt) {
        data = JSON.parse(evt.data);
-       if ('COLOR' in data){
-        COLOR(data['COLOR']);
-       } else if ('ON' in data){
-        ON();
-       } else if ('OFF' in data){
-        OFF();
-       };
-       
+       command = Object.keys(data)[0];
+       args = data[command];
+       if (args && args.constructor === Array){
+        args = '[' + args + ']';
+       }
+       string_to_eval = command + "("+ args + ");"
+       try{
+        eval(string_to_eval); 
+       }
+       finally{
+        console.log(string_to_eval);
+       }
     };
 
-    function ON(){
+    function ON(args){
         if (!isOn){
             isOn = true;
             if (is_black()){
                 color = [255, 255, 153];
             }
-            console.log(color);
             draw();
         }
     };
@@ -56,7 +59,7 @@ img {
         return true;
     }
 
-    function OFF(){
+    function OFF(args){
         if (isOn){
             isOn = false;
             draw();

@@ -12,7 +12,6 @@ class EchoWebSocket(websocket.WebSocketHandler):
         self.tcp_client = FlashlightClient(queue, client=self, port=port)
         yield self.tcp_client.connect()
         ioloop.IOLoop.current().spawn_callback(self.tcp_client.flashlight)
-        # yield self.client.run_client()
         self.write_message("tcp opened")
 
     def on_message(self, message):
