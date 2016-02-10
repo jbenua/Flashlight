@@ -13,7 +13,6 @@ class CommandQueue():
             try:
                 yield gen.sleep(0.1)
                 command, view = item
-                print(command)
                 view.write_message({command[0]: command[1]})
             finally:
                 self.queue.task_done()

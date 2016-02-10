@@ -27,6 +27,15 @@ class ConsoleView(AbstractFlashlightView):
         self.color = color
         self.draw()
 
+    def write_message(self, message):
+        if isinstance(message, dict):
+            for command in message:
+                try:
+                    method = getattr(self, command)
+                    method(message[command])
+                finally:
+                    pass
+
     def draw(self):
         self.status = "ON" if self.isOn else "OFF"
         print("Flashlight:", self.status, self.color if self.isOn else '')

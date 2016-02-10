@@ -24,8 +24,9 @@ class FlashlightServer(TCPServer):
             text = OFF
         elif 'color' in data:
             color = [int(c) for c in data.split(' ')[1:]]
-            text = pack(">chBBB",
-                b"\x20", 3, color[0], color[1], color[2])
+            text = pack(">ch", b"\x20", 3)
+            for component in color:
+                text += pack(">B", component)
         else:
             text = data
         if text[-1] != '\n':

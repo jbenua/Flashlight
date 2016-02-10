@@ -7,12 +7,6 @@ class FlashlightController(AbstractFlashlightController):
     def __init__(self, view=None):
         self.view = view
 
-    def execute_tlv(self, tlv):
-        commands = self._decompose_tlv(tlv)
-        for t, v in commands.items():
-            method = Commands[t]["method"]
-            getattr(self.view, method)(v)
-
     def get_sequence(self, tlv):
         commands = self._decompose_tlv(tlv)
         sequence = []
