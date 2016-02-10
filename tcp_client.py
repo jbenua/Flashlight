@@ -1,7 +1,6 @@
 from tornado import gen, ioloop
 from tornado.tcpclient import TCPClient
 from controller import FlashlightController
-# from views.console_view import ConsoleView
 from tornado.iostream import StreamClosedError
 
 

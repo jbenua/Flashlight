@@ -2,7 +2,7 @@ from tornado.ioloop import IOLoop
 from tornado.options import define, options
 from tornado import web
 from struct import *
-from ws import EchoWebSocket
+from ws import WebSocket
 import os
 from command_worker import CommandQueue
 from views.console_view import ConsoleView
@@ -26,7 +26,7 @@ class MainHandler(web.RequestHandler):
 def web_view():
     app = web.Application(
         [(r'/', MainHandler),
-        (r'/ws', EchoWebSocket)],
+        (r'/ws', WebSocket)],
         **settings)
     app.listen(8888)
     app.settings['port'] = options.port
@@ -51,7 +51,6 @@ def console_only():
 
 if __name__ == "__main__":
     options.parse_command_line()
-    print(options.console)
     print("Starting client...")
     if options.console:
         console_only()

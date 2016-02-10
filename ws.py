@@ -2,7 +2,7 @@ from tornado import websocket, ioloop, gen
 from tcp_client import FlashlightClient
 
 
-class EchoWebSocket(websocket.WebSocketHandler):
+class WebSocket(websocket.WebSocketHandler):
 
     @gen.coroutine
     def open(self):
