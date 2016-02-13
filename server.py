@@ -28,9 +28,7 @@ class FlashlightServer(TCPServer):
             for component in color:
                 text += pack(">B", component)
         else:
-            text = data
-        if text[-1] != '\n':
-            text += b'\n'
+            text = data.encode()
         return text
 
     @gen.coroutine
@@ -39,7 +37,7 @@ class FlashlightServer(TCPServer):
         print("Incoming connection from " + ip)
         FlashlightServer.clients.add(address)
         print("Command examples:\n" +
-            "'on'\n'off'\n'color 200 150 3'\n or byte sequence...")
+            "'on'\n'off'\n'color 200 150 3'")
         while True:
             try:
                 data = self.decode_data(input('(command) '))

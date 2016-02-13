@@ -24,12 +24,10 @@ class FlashlightClient():
     @gen.coroutine
     def flashlight(self):
         try:
-            data = yield self.stream.read_until('\n'.encode())
+            data = yield self.controller.parse_stream(self.stream)
+            if data:
+                self.queue.put((data, self.ws_client))
         except StreamClosedError:
             print("Server closed connection")
             raise gen.Return(False)
-        seq = self.controller.get_sequence(data)
-        for command in seq:
-            self.queue.put((command, self.ws_client))
         ioloop.IOLoop.current().spawn_callback(self.flashlight)
-        raise gen.Return(True)

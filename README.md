@@ -12,7 +12,7 @@ If you choose web-view (default value for `console`), after starting the client 
 
 # Commands
 When server is running and client is connected, send some commands to client from server. Use
-`on`, `off`, something like `color 200 150 3` or byte sequence.
+`on`, `off`, something like `color 200 150 3`
 
 # Other
 You can also run tests, using [green](https://github.com/CleanCut/green), for example

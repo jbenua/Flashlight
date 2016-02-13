@@ -1,5 +1,6 @@
 from views.abstracts import *
 from struct import *
+from tornado import gen
 
 
 class FlashlightController(AbstractFlashlightController):
@@ -39,6 +40,26 @@ class FlashlightController(AbstractFlashlightController):
             pass
 
         return commands
+
+    @gen.coroutine
+    def parse_stream(self, stream):
+        tl_bytes = yield stream.read_bytes(3)
+        try:
+            command, length = unpack('>ch', tl_bytes)
+        except error:
+            return dict()
+        if command not in Commands:
+            return dict()
+        value = None
+        if length == Commands[command]['length'] and length > 0:
+            pattern = '>' + 'B'*length
+            value_bytes = yield stream.read_bytes(length)
+            try:
+                value = unpack(pattern, value_bytes)
+            except error:
+                return dict()
+        if correct_tlv(command, length, value):
+            return (Commands[command]["method"], value)
 
 
 def correct_tlv(t, l, v):
